@@ -1,3 +1,14 @@
+# Implementation of HALGAN by OffWorld, Inc. Paper: arxiv.org/pdf/1901.11529.pdf
+# Based on WCGAN implementation at https://github.com/keras-team/keras-contrib/blob/master/examples/improved_wgan.py.
+#
+# Licensed under the MIT License (the "License")
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at https://opensource.org/licenses/MIT
+#
+# Unless required by applicable law, any source code or other materials
+# distributed under the License is distributed on an "AS IS" basis,
+# without warranties or conditions of any kind, express or implied.
+
 from collections import defaultdict
 import pickle
 from PIL import Image
@@ -188,7 +199,7 @@ def build_discriminator():
     return Model(inputs=image, outputs=[fake, aux])
 
 class TrainIterator():
-    def __init__(self, NAME, batchsize):
+    def __init__(self, batchsize):
         self.labels = np.load(os.path.join(base_dir, 'relpos.npy'))
         imgPaths = np.load(os.path.join(base_dir, 'filepaths.npy'))
         # sample 2000 random images
@@ -219,7 +230,7 @@ class TrainIterator():
         return image_batch, label_batch
 
 class FailIterator():
-    def __init__(self, NAME, batchsize):
+    def __init__(self, batchsize):
         imgPaths = os.listdir('{}/fail/fail/'.format(base_dir))
         imgPaths = [os.path.join('{}/fail/fail/'.format(base_dir), path) for path in imgPaths]
         imgPaths = np.array(imgPaths)
@@ -250,7 +261,7 @@ def preprocess_img(img):
 
 if __name__ == '__main__':
 
-    NAME = 'MiniWorld-SimToReal1-v0'
+    NAME = 'MiniWorld-SimToReal1Cont-v0'
     ROOT = '.'
 
     GRADIENT_PENALTY_WEIGHT = 10
@@ -345,10 +356,10 @@ if __name__ == '__main__':
 
     # load data and rescale to range [-1, 1]
     datagen = ImageDataGenerator(preprocessing_function=preprocess_img)
-    base_dir = '../data/{}-regression-1000/'.format(NAME)
+    base_dir = '../data/{}/training-data/'.format(NAME)
 
-    trainIterator = TrainIterator(NAME, batch_size)
-    failIterator = FailIterator(NAME, batch_size)
+    trainIterator = TrainIterator(batch_size)
+    failIterator = FailIterator(batch_size)
     nb_batches = len(trainIterator)/batch_size
     d_iters = 5
     nb_iters = int((nb_epochs * nb_batches)/(d_iters + 1))

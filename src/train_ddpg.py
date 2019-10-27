@@ -1,3 +1,13 @@
+# Implementation of HALGAN by OffWorld, Inc. Paper: arxiv.org/pdf/1901.11529.pdf
+#
+# Licensed under the MIT License (the "License")
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at https://opensource.org/licenses/MIT
+#
+# Unless required by applicable law, any source code or other materials
+# distributed under the License is distributed on an "AS IS" basis,
+# without warranties or conditions of any kind, express or implied.
+
 import os, sys, argparse, json
 import numpy as np
 import tensorflow as tf
@@ -14,7 +24,7 @@ from rl.agents import HALGANDDPGAgent
 from rl.policy import EpsGreedyQPolicy, LinearAnnealedPolicy
 from rl.memory import SequentialMemory, HALGANMemory
 from rl.processors import Processor
-from rl.callbacks import ModelIntervalCheckpoint, FileLogger, MemoryIntervalCheckpoint, TrajectoryDump
+from rl.callbacks import ModelIntervalCheckpoint, FileLogger
 from rl.random import GaussianWhiteNoiseProcess
 
 from utils import *
@@ -33,7 +43,7 @@ def main():
     parser.add_argument('--enjoy', help='run a pretrained policy', type=bool, default=False)
 
     # environment arguments
-    parser.add_argument('--env', help='environment ID', default='MiniWorldSimToReal1-v0')
+    parser.add_argument('--env', help='environment ID', default='MiniWorld-SimToReal1Cont-v0')
     parser.add_argument('--step_penalty', help='step penalty', type=float, default=0.)
     parser.add_argument('--power_penalty_mult', help='scaling of penalty on power', type=float, default=0.)
     parser.add_argument('--out_of_bounds_penalty', help='penalty for exceeding bounding box', type=float, default=0)
@@ -65,7 +75,6 @@ def main():
 
     # Create the environment and extract the number of actions.
     env = gym.make(args.env)
-    env.human_collects = False
     assert len(env.action_space.shape) == 1
     nb_actions = env.action_space.shape[0]
 
@@ -189,17 +198,17 @@ def main():
     if args.mode == 'vanilla':
         print("Vanilla dqn")
         halgana.percent_hallucination = lambda x: 0.
-    if args.mode == 'halgan':
-        from halgan import build_generator
+    elif args.mode == 'halgan':
+        from train_halgan import build_generator
         gan = build_generator(nb_classes=2, latent_size=128)
         if args.env == 'MiniWorld-SimToReal1Cont-v0':
-            ganpath = os.path.join(ROOT,'data',args.env, 'halgan.hdf5')
+            ganpath = os.path.join(ROOT, '..', 'data',args.env, 'halgan.hdf5')
         else:
             raise NotImplementedError
         print("Loading GAN weights from: {}".format(ganpath))
         halgana.configure_gan(gan, 128, ganpath)
         halgana.percent_hallucination = get_percent_hallucination
-    if args.mode == 'rig-':
+    elif args.mode == 'rig-':
         from beta_vae import build_vae, preprocess_img
         import imageio
         encoder, _, vae, _, _ = build_vae()
@@ -222,7 +231,7 @@ def main():
                     halgana.near_goal.append(preprocess_img(imageio.imread(imgPaths[i])))
         else:
             NotImplementedError
-    if args.mode == 'vae-her':
+    elif args.mode == 'vae-her':
         from beta_vae import build_vae, preprocess_img
         import imageio
         encoder, _, vae, _, _ = build_vae()
@@ -231,7 +240,7 @@ def main():
         vae.load_weights(vaepath)
         halgana.encoder = encoder
         halgana.percent_hallucination = get_percent_hallucination
-    if args.mode == 'her':
+    elif args.mode == 'her':
         print("Running naive HER")
         halgana.percent_hallucination = get_percent_hallucination
     else:

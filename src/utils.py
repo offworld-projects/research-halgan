@@ -1,3 +1,13 @@
+# Implementation of HALGAN by OffWorld, Inc. Paper: arxiv.org/pdf/1901.11529.pdf
+#
+# Licensed under the MIT License (the "License")
+# You may not use this file except in compliance with the License.
+# You may obtain a copy of the License at https://opensource.org/licenses/MIT
+#
+# Unless required by applicable law, any source code or other materials
+# distributed under the License is distributed on an "AS IS" basis,
+# without warranties or conditions of any kind, express or implied.
+
 import numpy as np
 from scipy.misc import imresize
 import math
@@ -6,7 +16,7 @@ from keras.models import Model
 from keras.layers import Dense, Activation, Flatten, Input, Concatenate, Conv2D, BatchNormalization, Permute, Reshape, Lambda, LeakyReLU, MaxPooling2D
 from keras import backend as K
 
-from rl.processors import Processor, SqueezeProcessor
+from rl.processors import Processor
 
 class MiniWorldProcessor(Processor):
     def __init__(self):
