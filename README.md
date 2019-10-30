@@ -21,7 +21,7 @@ This approach extends the [HER](https://arxiv.org/pdf/1707.01495.pdf)
 algorithm to visual settings.
 
 <p align="center">
-<img src="images/box_hallucinations.jpg" width=260></img>
+<img src="images/box_hallucinations.jpeg" width=260></img>
 <img src="images/miniworld_results.jpg" width=260></img>
 </p>
 
