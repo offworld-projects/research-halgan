@@ -40,8 +40,8 @@ This code was developed using Python 3.5.2 on Ubuntu 16.04. In addition, the
 following dependencies should be installed:
 - [keras](https://keras.io/) (version 2.2.0)
 - [Tensorflow](https://www.tensorflow.org/) (version 1.8.0)
-- Offworld fork of [keras-rl](https://github.com/offworld-projects/keras-rl). Switch to branch offworld-halgan
-- Offworld fork of [gym-miniworld]()
+- Offworld fork of [keras-rl](https://github.com/offworld-projects/keras-rl). Switch to branch offworld-halgan.
+- Offworld fork of [gym-miniworld](https://github.com/offworld-projects/gym-miniworld/). Switch to branch offworld-halgan.
 
 ## Usage
 This repository contains:
